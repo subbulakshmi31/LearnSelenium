@@ -1,0 +1,111 @@
+package week1;
+
+
+
+
+
+import java.util.List;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+public class MyntraOnline {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+		
+		System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+		ChromeDriver driver = new ChromeDriver();
+		driver.get("https://www.myntra.com/");
+		driver.manage().window().maximize();
+		WebElement eleWomenMouseHover = driver.findElementByXPath("(//a[text()='Women'])[1]");
+		Actions builder = new Actions(driver);
+		builder.moveToElement(eleWomenMouseHover).perform();
+		Thread.sleep(3000);
+		driver.findElementByLinkText("Jackets & Coats").click();
+		String JacCount = driver.findElementByXPath("//h1[text()='Coats & Jackets For Women']/following-sibling::span").getText();
+		System.out.println(JacCount);
+		String count = JacCount.replaceAll("\\D","");
+				 int totCount = Integer.parseInt(count);
+				 System.out.println(totCount);
+		String JacketCount = driver.findElementByXPath("//input[@value='Jackets']//following-sibling::span").getText();
+		String CoatCount = driver.findElementByXPath("//input[@value='Coats']//following-sibling::span").getText();
+		System.out.println(JacketCount);
+		System.out.println(CoatCount);
+		int length = JacketCount.length();
+		String FinalJacketCount = JacketCount.substring(1, length-1);
+		System.out.println(FinalJacketCount);
+		
+		int lengthCoat = CoatCount.length();
+		String FinalCoatCount = CoatCount.substring(1, lengthCoat-1);
+		
+		
+		if((Integer.parseInt(FinalJacketCount)+Integer.parseInt(FinalCoatCount))==totCount) {
+			System.out.println("The Sum of Category count matches the Total Count displayed");
+			
+		} else {
+			System.out.println("The Sum of Category count doesnt matches the Total Count displayed");
+		}
+		driver.findElementByXPath("(//div[@class='common-checkboxIndicator'])[2]").click();
+		driver.findElementByClassName("brand-more").click();
+		driver.findElementByClassName("FilterDirectory-searchInput").sendKeys("MANGO");
+		driver.findElementByXPath("//label[@class=' common-customCheckbox']/div[1]").click();
+		//driver.findElementByXPath("(//input[@value='MANGO']/following::div)[1]").click();
+		//Thread.sleep(1000);
+		
+		driver.findElementByXPath("//span[@class='myntraweb-sprite FilterDirectory-close sprites-remove']").click();
+		Thread.sleep(3000);
+		
+		int brandCount=0;
+		List<WebElement> coatList = driver.findElementsByXPath("//h3[@class='product-brand']");
+		for (WebElement brandName : coatList) {
+			String brandSel = brandName.getText();
+			if (brandSel.equalsIgnoreCase("MANGO")) {
+				brandCount = brandCount+1;
+				
+			}
+			
+			if (brandCount==coatList.size()) {
+				System.out.println("All are Mango Products");
+			} else {
+				System.out.println("Not MANGO Products");
+			}
+			
+			Actions sort = new Actions(driver);
+			WebElement sortDropDown = driver.findElementByClassName("sort-sortBy");
+			sort.moveToElement(sortDropDown).perform();
+			driver.findElementByXPath("//label[text()='Better Discount']").click();
+			
+			
+			WebElement disc = driver.findElementByXPath("//div[@class='sort-sortBy']");
+			builder.moveToElement(disc).perform();
+			driver.findElementByXPath("//ul[@class='sort-list']/li[3]/label").click();
+			
+			
+			List<WebElement> overallPrice = driver.findElementsByXPath("//span[@class='product-discountedPrice']");
+			String firstitemprice = overallPrice.get(0).getText();
+			System.out.println("Price of first displayed coat is: " + firstitemprice);
+			
+			
+			WebElement ele = driver.findElementByXPath("//span[@class='product-discountedPrice']");
+			builder.moveToElement(ele).perform();
+			
+			
+			driver.findElementByXPath("//div[contains(@class,'product-actions')]/span/span").click();
+			String logintitle = driver.getTitle();
+			System.out.println(logintitle);
+			
+			//Close Browser
+			driver.close();
+			
+			
+		}
+		
+		
+		
+		
+		
+	}
+
+}
