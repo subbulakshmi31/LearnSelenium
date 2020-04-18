@@ -1,0 +1,110 @@
+package week1;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class MakeMyTrip {
+
+	public static void main(String[] args) throws InterruptedException {
+		// TODO Auto-generated method stub
+
+		// Go to https://www.makemytrip.com/
+		System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
+		ChromeDriver driver = new ChromeDriver();
+		driver.get("https://www.makemytrip.com/");
+		driver.manage().window().maximize();
+
+		// Click Hotels
+		driver.findElementByXPath("//span[@class='chNavIcon appendBottom2 chSprite chHotels']").click();
+		Thread.sleep(2000);
+
+		// Enter city as Goa, and choose Goa, India
+		driver.findElementById("city").click();
+		Thread.sleep(2000);
+		driver.findElementByXPath("//input[@placeholder='Enter city/ Hotel/ Area/ Building']").sendKeys("Goa",
+				Keys.ENTER);
+
+		// Enter Check in date as Next month 15th (May 15) and Check out as start date+5
+		driver.findElementById("checkin").click();
+		driver.findElementByXPath("(//div[text()='15'])[2]").click();
+		String calenderDate = driver.findElementByXPath("//div[@aria-label='Fri May 15 2020']").getText();
+		System.out.println(calenderDate);
+		// String[] Date = calenderDate.split(" ");
+		// String fromDate = Date[2];
+		int toDate = Integer.parseInt(calenderDate) + 5;
+		System.out.println(toDate);
+		driver.findElementByXPath("(//div[text()='" + toDate + "'])[2]").click();
+
+		// Click on ROOMS & GUESTS and click 2 Adults and one Children(age 12). Click
+		// Apply Button.
+		driver.findElementById("guest").click();
+		driver.findElementByXPath("(//li[text()='2'])[1]").click();
+		driver.findElementByXPath("(//li[text()='1'])[2]").click();
+		WebElement eleAgeDD = driver.findElementByClassName("ageSelectBox");
+		Select eleSelect = new Select(eleAgeDD);
+		eleSelect.selectByVisibleText("12");
+		driver.findElementByXPath("//button[@class='primaryBtn btnApply']").click();
+
+		// Click Search button
+		driver.findElementById("hsw_search_button").click();
+		driver.findElementByXPath("//a[@class='mapCont']").click();
+		driver.findElementByClassName("mapClose").click();
+
+		// Select locality as Baga
+		driver.findElementByXPath("//label[text()='Baga']").click();
+
+		// Select 5 start in Star Category under Select Filters
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,1000)");
+		driver.findElementByXPath("//label[text()='5 Star']").click();
+		Thread.sleep(5000);
+
+		// Click on the first resulting hotel and go to the new window
+		// JavascriptExecutor js1 = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,500)");
+		driver.findElementByXPath("(//p[@id='hlistpg_hotel_name'])[2]").click();
+
+		// Print the Hotel Name
+		Set<String> windowHandles = driver.getWindowHandles();
+		List<String> winList = new ArrayList<String>(windowHandles);
+		driver.switchTo().window(winList.get(1));
+
+		WebDriverWait wait = new WebDriverWait(driver,20);
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByXPath("//h1[@id='detpg_hotel_name']"))).click();
+		 
+
+		String hotelName = driver.findElementByXPath("//h1[@id='detpg_hotel_name']").getText();
+		System.out.println(hotelName);
+
+		// Click MORE OPTIONS link and Select 3Months plan and close
+		driver.findElementByXPath("(//span[text()='MORE OPTIONS'])[1]").click();
+		Thread.sleep(2000);
+		driver.findElementByXPath("(//span[text()='SELECT'])[1]").click();
+		driver.findElementByXPath("//span[@class='close']").click();
+		Thread.sleep(2000);
+
+		// Click on BOOK THIS NOW
+		driver.findElementByLinkText("BOOK THIS NOW").click();
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElementByXPath("//span[@class='close']")))
+				.click();
+		driver.findElementByXPath("//span[@class='close']").click();
+
+		// Print the Total Payable amount
+		driver.findElementById("revpg_total_payable_amt").click();
+
+		// Close the browser
+		driver.close();
+		driver.quit();
+
+	}
+
+}
